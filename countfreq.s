@@ -131,17 +131,24 @@ Reset_Handler
 ;--------------------------------------------------------------------------------------------
 				; constant data used in counting loop
 
-START		    ; initialise	 counting loop
+START		    ; initialise counting loop
+				; R0 will contain our finished variable
+				MOV R0, #1
+				
+				
 
 				; main counting loop loops forever, interrupted at end of simulation
 LOOP		
+				CMP R0, #1
+				BLT LOOP_END
+				
 				B 		LOOP			; For skeleton code only, replace with counting loop which
 										; branches to LOOP_END on termination of loop
 
 
 
-ISR_FUNC								; Interrupt must set variable to terminate main loop
-				B 		LOOP_END		; for skeleton code only		
+ISR_FUNC		MOV R0, #0				; Interrupt must set variable to terminate main loop
+				BX R14					; for skeleton code only		
 										; replace this by return from interrupt
 										; branch to LOOP_END will be at end of LOOP code
 
