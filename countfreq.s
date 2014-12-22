@@ -99,7 +99,6 @@ Reset_Handler
 				STR R0, [R1]
 
 ;  Setup Stack for each mode
-
                 LDR     R0, =Stack_Top
 
 ;  Enter Undefined Instruction Mode and set its Stack Pointer
@@ -132,9 +131,9 @@ Reset_Handler
 ;--------------------------------------------------------------------------------------------
 				; constant data used in counting loop
 
-START		    ; initialse	 counting loop
+START		    ; initialise	 counting loop
 
-				; main couting loop loops forever, interrupted at end of simulation
+				; main counting loop loops forever, interrupted at end of simulation
 LOOP		
 				B 		LOOP			; For skeleton code only, replace with counting loop which
 										; branches to LOOP_END on termination of loop
