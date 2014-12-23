@@ -183,7 +183,7 @@ ARM Macro Assembler    Page 3
    85 00000024 E5810000        STR              R0, [R1]    ; EINT2 reset inter
                                                             rupt
    86 00000028 E9BD0003        LDMED            R13!, {R0,R1}
-   87 0000002C EA00001D        B                ISR_FUNC
+   87 0000002C EA000025        B                ISR_FUNC
    88 00000030         
    89 00000030         Reset_Handler
    90 00000030         ; PORT0.1 1->0 triggers EINT0 IRQ interrupt
@@ -204,7 +204,7 @@ ARM Macro Assembler    Page 4
    99 00000050 E5810000        STR              R0, [R1]
   100 00000054         
   101 00000054         ;  Setup Stack for each mode
-  102 00000054 E59F0074        LDR              R0, =Stack_Top
+  102 00000054 E59F0098        LDR              R0, =Stack_Top
   103 00000058         
   104 00000058         ;  Enter Undefined Instruction Mode and set its Stack Po
                        inter
@@ -244,117 +244,121 @@ _Bit
                        -------------------------------------
   132 00000098         ; constant data used in counting loop
   133 00000098         
-  134 00000098         START                                ; initialise counti
+  134 00000098         
+  135 00000098         
+  136 00000098         START                                ; initialise counti
                                                             ng loop
-  135 00000098         ; R0 will contain our finished variable
-  136 00000098 E3A00001        MOV              R0, #1
-  137 0000009C         
-  138 0000009C         
-  139 0000009C         
-  140 0000009C         ; main counting loop loops forever, interrupted at end o
+  137 00000098         ; R0 will contain our finished variable
+  138 00000098 E3A02001        MOV              R2, #1
+  139 0000009C E3A00001        MOV              R0, #1
+  140 000000A0 E24F8094        ADR              R8, Addr_IOPIN
+  141 000000A4 E59F904C        LDR              R9, =P0COUNT
+  142 000000A8         
+  143 000000A8         
+  144 000000A8         ; main counting loop loops forever, interrupted at end o
                        f simulation
-  141 0000009C         LOOP
-  142 0000009C E3500001        CMP              R0, #1
-  143 000000A0 BA000007        BLT              LOOP_END
-  144 000000A4 EAFFFFFC        B                LOOP        ; For skeleton code
-                                                             only, replace with
+  145 000000A8 E3520001 
 
 
 
 ARM Macro Assembler    Page 5 
 
 
-                                                             counting loop whic
-                                                            h
-  145 000000A8         ; branches to LOOP_END on termination of loop
-  146 000000A8         
-  147 000000A8         
-  148 000000A8         
-  149 000000A8 E3A00001 
+                       LOOP    CMP              R2, #1
+  146 000000AC BA00000D        BLT              LOOP_END
+  147 000000B0 E5981000        LDR              R1, [R8]
+  148 000000B4 E3110001        TST              R1, #1      ;
+  149 000000B8 A5993000        LDRGE            R3, [R9]
+  150 000000BC A2833001        ADDGE            R3, #1
+  151 000000C0 A5893000        STRGE            R3, [R9]
+  152 000000C4 EAFFFFF7        B                LOOP
+  153 000000C8         
+  154 000000C8 E3A02000 
                        ISR_FUNC
-                               MOV              R0, #1      ; Interrupt must se
+                               MOV              R2, #0      ; Interrupt must se
                                                             t variable to termi
                                                             nate main loop
-  150 000000AC E12FFF1E        BX               R14         ; for skeleton code
-                                                             only  
-  151 000000B0         ; replace this by return from interrupt
-  152 000000B0         ; branch to LOOP_END will be at end of LOOP code
-  153 000000B0         
-  154 000000B0         ;-------------------------------------------------------
+  155 000000CC E25EF004        SUBS             PC, R14, #4
+  156 000000D0 E12FFF1E        BX               R14         ; branch to LOOP_EN
+                                                            D will be at end of
+                                                             LOOP code
+  157 000000D4         
+  158 000000D4         ;-------------------------------------------------------
                        -------------------------------------
-  155 000000B0         ; PARAMETERS TO CONTROL SIMULATION, VALUES MAY BE CHANGE
+  159 000000D4         ; PARAMETERS TO CONTROL SIMULATION, VALUES MAY BE CHANGE
                        D TO IMPLEMENT DIFFERENT TESTS
-  156 000000B0         ;-------------------------------------------------------
+  160 000000D4         ;-------------------------------------------------------
                        -------------------------------------
-  157 000000B0         SIMCONTROL
-  158 000000B0 000003E8 
+  161 000000D4         SIMCONTROL
+  162 000000D4 000003E8 
                        SIM_TIME
                                DCD              1000        ; length of simulat
                                                             ion in cycles (100M
                                                             Hz clock)
-  159 000000B4 00000050 
+  163 000000D8 00000050 
                        P0_PERIOD
                                DCD              80          ; bit 0 input perio
                                                             d in cycles
-  160 000000B8 00000022 
+  164 000000DC 00000022 
                        P1_PERIOD
                                DCD              34          ; bit 7 input perio
                                                             d in cycles
-  161 000000BC 0000002C 
+  165 000000E0 0000002C 
                        P2_PERIOD
                                DCD              44          ; bit 18 input peri
                                                             od in cycles
-  162 000000C0 00000026 
+  166 000000E4 00000026 
                        P3_PERIOD
                                DCD              38          ; bit 25 input peri
                                                             od in cycles
-  163 000000C4         ;---------------------DO NOT CHANGE AFTER THIS COMMENT--
+  167 000000E8         ;---------------------DO NOT CHANGE AFTER THIS COMMENT--
                        -------------------------------------
-  164 000000C4         ;-------------------------------------------------------
+  168 000000E8         ;-------------------------------------------------------
                        -------------------------------------
-  165 000000C4         ;-------------------------------------------------------
+  169 000000E8         ;-------------------------------------------------------
                        -------------------------------------
-  166 000000C4 E3A00C7F 
+  170 000000E8 E3A00C7F 
                        LOOP_END
                                MOV              R0, #0x7f00
-  167 000000C8 E5900000        LDR              R0, [R0]    ; read memory locat
+  171 000000EC E5900000        LDR              R0, [R0]    ; read memory locat
                                                             ion 7f00 to stop si
                                                             mulation
-  168 000000CC EAFFFFFE 
-                       STOP    B                STOP
-  169 000000D0         ;-------------------------------------------------------
 
 
 
 ARM Macro Assembler    Page 6 
 
 
+  172 000000F0 EAFFFFFE 
+                       STOP    B                STOP
+  173 000000F4         ;-------------------------------------------------------
                        ----------------------
-  170 000000D0 00000000        AREA             DATA, READWRITE
-  171 00000000         SIM_OUT
-  172 00000000 00000000 
+  174 000000F4 00000000 
+              00000000         AREA             DATA, READWRITE
+  175 00000000         SIM_OUT
+  176 00000000 00000000 
                        P0COUNT DCD              0
-  173 00000004 00000000 
+  177 00000004 00000000 
                        P1COUNT DCD              0
-  174 00000008 00000000 
+  178 00000008 00000000 
                        P2COUNT DCD              0
-  175 0000000C 00000000 
+  179 0000000C 00000000 
                        P3COUNT DCD              0
-  176 00000010         ;-------------------------------------------------------
+  180 00000010         ;-------------------------------------------------------
                        -----------------------   
-  177 00000010                 AREA             STACK, NOINIT, READWRITE, ALIGN
+  181 00000010                 AREA             STACK, NOINIT, READWRITE, ALIGN
 =3
-  178 00000000         DEBUG_CNT
+  182 00000000         DEBUG_CNT
                                SPACE            16
-  179 00000010         Stack_Mem
+  183 00000010         Stack_Mem
                                SPACE            USR_Stack_Size
-  180 00000010         __initial_sp
+  184 00000010         __initial_sp
                                SPACE            ISR_Stack_Size
-  181 00000110         
-  182 00000110         Stack_Top
-  183 00000110         
-  184 00000110         
-  185 00000110                 END                          ; Mark end of file
+  185 00000110         
+  186 00000110         Stack_Top
+  187 00000110         
+  188 00000110         
+  189 00000110                 END                          ; Mark end of file
 Command Line: --debug --xref --apcs=interwork --depend=.\countfreq.d -o.\countf
 req.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include -IC:\Keil\ARM\Inc\Phil
 ips --predefine="__EVAL SETA 1" --list=.\countfreq.lst countfreq.s
@@ -546,8 +550,8 @@ Symbol: Addr_IOPIN
    Definitions
       At line 77 in file countfreq.s
    Uses
-      None
-Comment: Addr_IOPIN unused
+      At line 140 in file countfreq.s
+Comment: Addr_IOPIN used once
 Addr_PINSEL0 0000000C
 
 Symbol: Addr_PINSEL0
@@ -572,7 +576,7 @@ Symbol: IRQ_Addr
    Uses
       At line 44 in file countfreq.s
 Comment: IRQ_Addr used once
-ISR_FUNC 000000A8
+ISR_FUNC 000000C8
 
 Symbol: ISR_FUNC
 
@@ -582,7 +586,7 @@ ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 Relocatable symbols
 
    Definitions
-      At line 149 in file countfreq.s
+      At line 154 in file countfreq.s
    Uses
       At line 87 in file countfreq.s
 Comment: ISR_FUNC used once
@@ -594,51 +598,51 @@ Symbol: ISR_FUNC1
    Uses
       At line 68 in file countfreq.s
 Comment: ISR_FUNC1 used once
-LOOP 0000009C
+LOOP 000000A8
 
 Symbol: LOOP
    Definitions
-      At line 141 in file countfreq.s
+      At line 145 in file countfreq.s
    Uses
-      At line 144 in file countfreq.s
+      At line 152 in file countfreq.s
 Comment: LOOP used once
-LOOP_END 000000C4
+LOOP_END 000000E8
 
 Symbol: LOOP_END
    Definitions
-      At line 166 in file countfreq.s
+      At line 170 in file countfreq.s
    Uses
-      At line 143 in file countfreq.s
+      At line 146 in file countfreq.s
 Comment: LOOP_END used once
-P0_PERIOD 000000B4
+P0_PERIOD 000000D8
 
 Symbol: P0_PERIOD
    Definitions
-      At line 159 in file countfreq.s
+      At line 163 in file countfreq.s
    Uses
       None
 Comment: P0_PERIOD unused
-P1_PERIOD 000000B8
+P1_PERIOD 000000DC
 
 Symbol: P1_PERIOD
    Definitions
-      At line 160 in file countfreq.s
+      At line 164 in file countfreq.s
    Uses
       None
 Comment: P1_PERIOD unused
-P2_PERIOD 000000BC
+P2_PERIOD 000000E0
 
 Symbol: P2_PERIOD
    Definitions
-      At line 161 in file countfreq.s
+      At line 165 in file countfreq.s
    Uses
       None
 Comment: P2_PERIOD unused
-P3_PERIOD 000000C0
+P3_PERIOD 000000E4
 
 Symbol: P3_PERIOD
    Definitions
-      At line 162 in file countfreq.s
+      At line 166 in file countfreq.s
    Uses
 
 
@@ -656,19 +660,19 @@ Symbol: Reset_Handler
    Uses
       At line 51 in file countfreq.s
 Comment: Reset_Handler used once
-SIMCONTROL 000000B0
+SIMCONTROL 000000D4
 
 Symbol: SIMCONTROL
    Definitions
-      At line 157 in file countfreq.s
+      At line 161 in file countfreq.s
    Uses
       At line 49 in file countfreq.s
 Comment: SIMCONTROL used once
-SIM_TIME 000000B0
+SIM_TIME 000000D4
 
 Symbol: SIM_TIME
    Definitions
-      At line 158 in file countfreq.s
+      At line 162 in file countfreq.s
    Uses
       None
 Comment: SIM_TIME unused
@@ -676,17 +680,17 @@ START 00000098
 
 Symbol: START
    Definitions
-      At line 134 in file countfreq.s
+      At line 136 in file countfreq.s
    Uses
       At line 128 in file countfreq.s
 Comment: START used once
-STOP 000000CC
+STOP 000000F0
 
 Symbol: STOP
    Definitions
-      At line 168 in file countfreq.s
+      At line 172 in file countfreq.s
    Uses
-      At line 168 in file countfreq.s
+      At line 172 in file countfreq.s
 Comment: STOP used once
 20 symbols
 
@@ -699,7 +703,7 @@ DATA 00000000
 
 Symbol: DATA
    Definitions
-      At line 170 in file countfreq.s
+      At line 174 in file countfreq.s
    Uses
       None
 Comment: DATA unused
@@ -707,15 +711,16 @@ P0COUNT 00000000
 
 Symbol: P0COUNT
    Definitions
-      At line 172 in file countfreq.s
+      At line 176 in file countfreq.s
    Uses
       At line 48 in file countfreq.s
-Comment: P0COUNT used once
+      At line 141 in file countfreq.s
+
 P1COUNT 00000004
 
 Symbol: P1COUNT
    Definitions
-      At line 173 in file countfreq.s
+      At line 177 in file countfreq.s
    Uses
       None
 Comment: P1COUNT unused
@@ -723,7 +728,7 @@ P2COUNT 00000008
 
 Symbol: P2COUNT
    Definitions
-      At line 174 in file countfreq.s
+      At line 178 in file countfreq.s
    Uses
       None
 Comment: P2COUNT unused
@@ -731,7 +736,7 @@ P3COUNT 0000000C
 
 Symbol: P3COUNT
    Definitions
-      At line 175 in file countfreq.s
+      At line 179 in file countfreq.s
    Uses
       None
 Comment: P3COUNT unused
@@ -739,7 +744,7 @@ SIM_OUT 00000000
 
 Symbol: SIM_OUT
    Definitions
-      At line 171 in file countfreq.s
+      At line 175 in file countfreq.s
    Uses
       None
 Comment: SIM_OUT unused
@@ -754,7 +759,7 @@ DEBUG_CNT 00000000
 
 Symbol: DEBUG_CNT
    Definitions
-      At line 178 in file countfreq.s
+      At line 182 in file countfreq.s
    Uses
       At line 50 in file countfreq.s
 Comment: DEBUG_CNT used once
@@ -762,7 +767,7 @@ STACK 00000000
 
 Symbol: STACK
    Definitions
-      At line 177 in file countfreq.s
+      At line 181 in file countfreq.s
    Uses
       None
 Comment: STACK unused
@@ -770,7 +775,7 @@ Stack_Mem 00000010
 
 Symbol: Stack_Mem
    Definitions
-      At line 179 in file countfreq.s
+      At line 183 in file countfreq.s
    Uses
       None
 Comment: Stack_Mem unused
@@ -778,7 +783,7 @@ Stack_Top 00000110
 
 Symbol: Stack_Top
    Definitions
-      At line 182 in file countfreq.s
+      At line 186 in file countfreq.s
    Uses
       At line 102 in file countfreq.s
 Comment: Stack_Top used once
@@ -786,7 +791,7 @@ __initial_sp 00000010
 
 Symbol: __initial_sp
    Definitions
-      At line 180 in file countfreq.s
+      At line 184 in file countfreq.s
    Uses
       None
 Comment: __initial_sp unused
@@ -850,7 +855,7 @@ Symbol: ISR_Stack_Size
    Definitions
       At line 32 in file countfreq.s
    Uses
-      At line 180 in file countfreq.s
+      At line 184 in file countfreq.s
 Comment: ISR_Stack_Size used once
 I_Bit 00000080
 
@@ -955,7 +960,7 @@ Symbol: USR_Stack_Size
    Definitions
       At line 29 in file countfreq.s
    Uses
-      At line 179 in file countfreq.s
+      At line 183 in file countfreq.s
 Comment: USR_Stack_Size used once
 17 symbols
 397 symbols in table
