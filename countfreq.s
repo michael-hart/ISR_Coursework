@@ -135,14 +135,13 @@ Reset_Handler
 
 START		    ; initialise counting loop
 				; R0 will contain our finished variable
-				MOV R2, #1
 				MOV R0, #1
 				ADR R8, Addr_IOPIN
 				LDR R9, =P0COUNT
 				
 
 				; main counting loop loops forever, interrupted at end of simulation
-LOOP			CMP R2, #1
+LOOP			CMP R0, #1
 				BLT LOOP_END
 				LDR R1, [R8]
 				TST R1, #1;
@@ -151,7 +150,7 @@ LOOP			CMP R2, #1
 				STRGE R3, [R9]
 				B 		LOOP
 
-ISR_FUNC		MOV R2, #0				; Interrupt must set variable to terminate main loop
+ISR_FUNC		MOV R0, #0				; Interrupt must set variable to terminate main loop
 				SUBS PC, R14, #4
 				BX R14	; branch to LOOP_END will be at end of LOOP code
 
