@@ -153,27 +153,26 @@ LOOP			CMP R0, #1
 				BEQ LOOP
 				
 				TST R6, #1
-				LDREQ R9, [R2]
-				ADDEQ R9, #1
-				STREQ R9, [R2]
-				TST R6, #8
-				LDREQ R9, [R2, #4]
-				ADDEQ R9, #1
-				STREQ R9, [R2, #4]
+				LDRNE R9, [R2]
+				ADDNE R9, #1
+				STRNE R9, [R2]
+				TST R6, #&80
+				LDRNE R9, [R2, #4]
+				ADDNE R9, #1
+				STRNE R9, [R2, #4]
 				TST R6, #&40000
-				LDREQ R9, [R2, #8]
-				ADDEQ R9, #1
-				STREQ R9, [R2, #8]
+				LDRNE R9, [R2, #8]
+				ADDNE R9, #1
+				STRNE R9, [R2, #8]
 				TST R6, #&2000000
-				LDREQ R9, [R2, #&C]
-				ADDEQ R9, #1
-				STREQ R9, [R2, #&C]
+				LDRNE R9, [R2, #&C]
+				ADDNE R9, #1
+				STRNE R9, [R2, #&C]
 				MOV R10, R1
 				B 		LOOP
 
 ISR_FUNC		MOV R0, #0				; Interrupt must set variable to terminate main loop
 				SUBS PC, R14, #4
-				BX R14	; branch to LOOP_END will be at end of LOOP code
 
 ;--------------------------------------------------------------------------------------------
 ; PARAMETERS TO CONTROL SIMULATION, VALUES MAY BE CHANGED TO IMPLEMENT DIFFERENT TESTS
