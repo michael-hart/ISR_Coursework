@@ -136,24 +136,21 @@ Reset_Handler
 START		    ; initialise counting loop
 				; R0 will contain our finished variable
 				MOV R0, #1
-				ADR R8, Addr_PINSEL0
-				LDR R9, =P0COUNT
+				ADR R8, Addr_IOPIN
 				LDR R10, [R8]
 				AND R10, #&2040000
 				AND R10, #&81
 				; R2, R3, R4, R5 are count variables
 				LDR R2, =P0COUNT
-				LDR R3, =P1COUNT
-				LDR R4, =P2COUNT
-				LDR R5, =P3COUNT
+				MOV R3, #&2040000
+				ORR R3, #&81
 
 				; main counting loop loops forever, interrupted at end of simulation
 LOOP			CMP R0, #1
 				BLT LOOP_END
 				LDR R1, [R8]
-				AND R1, #&2040000
-				AND R1, #&81
-				EOR R6, R1, R10
+				AND R1, R3
+				EORS R6, R1, R10
 				BEQ LOOP
 				
 				TST R6, #1
@@ -161,17 +158,17 @@ LOOP			CMP R0, #1
 				ADDEQ R9, #1
 				STREQ R9, [R2]
 				TST R6, #8
-				LDREQ R9, [R3]
+				LDREQ R9, [R2, #4]
 				ADDEQ R9, #1
-				STREQ R9, [R3]
+				STREQ R9, [R2, #4]
 				TST R6, #&40000
-				LDREQ R9, [R4]
+				LDREQ R9, [R2, #8]
 				ADDEQ R9, #1
-				STREQ R9, [R4]
+				STREQ R9, [R2, #8]
 				TST R6, #&2000000
-				LDREQ R9, [R5]
+				LDREQ R9, [R2, #&C]
 				ADDEQ R9, #1
-				STREQ R9, [R5]
+				STREQ R9, [R2, #&C]
 				MOV R10, R1
 				B 		LOOP
 
