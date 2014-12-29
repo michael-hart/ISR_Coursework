@@ -136,14 +136,13 @@ Reset_Handler
 START		    ; initialise counting loop
 				; R0 will contain our finished variable
 				MOV R0, #1
-				ADR R8, Addr_IOPIN
-				LDR R10, [R8]
-				AND R10, #&2040000
-				AND R10, #&81
+				LDR R8, Addr_IOPIN
 				; R2, R3, R4, R5 are count variables
 				LDR R2, =P0COUNT
 				MOV R3, #&2040000
 				ORR R3, #&81
+				LDR R10, [R8]
+				AND R10, R3
 
 				; main counting loop loops forever, interrupted at end of simulation
 LOOP			CMP R0, #1
