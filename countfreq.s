@@ -137,39 +137,46 @@ START		    ; initialise counting loop
 				; R0 will contain our finished variable
 				MOV R0, #1
 				LDR R8, Addr_IOPIN
-				; R2, R3, R4, R5 are count variables
-				LDR R2, =P0COUNT
+				; R3 is bitmask
 				MOV R3, #&2040000
 				ORR R3, #&81
+				; R4, R5, R6, R7 are count variables
+				MOV R4, #0
+				MOV R5, #0
+				MOV R6, #0
+				MOV R7, #0
+				; R2 addresses P0COUNT, P1COUNT = P0COUNT + 4 etc.
+				LDR R2, =P0COUNT
+				
+				; R10 is previous value for comparison
 				LDR R10, [R8]
 				AND R10, R3
 
 				; main counting loop loops forever, interrupted at end of simulation
 LOOP			CMP R0, #1
-				BLT LOOP_END
+				; LT means that the loop is done; store counts and branch to end
+				BLT STORE_VARS
 				LDR R1, [R8]
 				AND R1, R3
-				EORS R6, R1, R10
+				EORS R9, R1, R10
 				BEQ LOOP
 				
-				TST R6, #1
-				LDRNE R9, [R2]
-				ADDNE R9, #1
-				STRNE R9, [R2]
-				TST R6, #&80
-				LDRNE R9, [R2, #4]
-				ADDNE R9, #1
-				STRNE R9, [R2, #4]
-				TST R6, #&40000
-				LDRNE R9, [R2, #8]
-				ADDNE R9, #1
-				STRNE R9, [R2, #8]
-				TST R6, #&2000000
-				LDRNE R9, [R2, #&C]
-				ADDNE R9, #1
-				STRNE R9, [R2, #&C]
+				TST R9, #1
+				ADDNE R4, #1
+				TST R9, #&80
+				ADDNE R5, #1
+				TST R9, #&40000
+				ADDNE R6, #1
+				TST R9, #&2000000
+				ADDNE R7, #1
 				MOV R10, R1
-				B 		LOOP
+				B LOOP
+				
+STORE_VARS		STRLT R4, [R2]
+				STRLT R5, [R2, #4]
+				STRLT R6, [R2, #8]
+				STRLT R7, [R2, #&C]
+				B LOOP_END
 
 ISR_FUNC		MOV R0, #0				; Interrupt must set variable to terminate main loop
 				SUBS PC, R14, #4
