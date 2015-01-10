@@ -172,10 +172,14 @@ LOOP			CMP R0, #1
 				MOV R10, R1
 				B LOOP
 				
-STORE_VARS		STRLT R4, [R2]
-				STRLT R5, [R2, #4]
-				STRLT R6, [R2, #8]
-				STRLT R7, [R2, #&C]
+STORE_VARS		LSR R4, #1
+				STR R4, [R2]
+				LSR R5, #1
+				STR R5, [R2, #4]
+				LSR R6, #1
+				STR R6, [R2, #8]
+				LSR R7, #1
+				STR R7, [R2, #&C]
 				B LOOP_END
 
 ISR_FUNC		MOV R0, #0				; Interrupt must set variable to terminate main loop
