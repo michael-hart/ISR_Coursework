@@ -173,6 +173,7 @@ LOOP			CMP R0, #1
 				MOV R10, R1
 				B LOOP
 				; 0000 0000 0000 0100 0000 0000 0000 0001
+				; 0000 0000 0000 0100 0000 0000 0000 0001
 				
 STORE_VARS		MOV R11, #&FF000000
 				ORR R11, #&00FC0000
@@ -180,20 +181,20 @@ STORE_VARS		MOV R11, #&FF000000
 				ORR R12, #&000000FF
 				
 				AND R7, R4, R11
-				LSR R7, #1
-				STR R7, [R2]
+				LSR R7, #19
+				STR R7, [R2, #&C]
 				
 				AND R7, R4, R12
 				LSR R7, #1
 				STR R7, [R2, #4]
 				
 				AND R7, R5, R11
-				LSR R7, #1
+				LSR R7, #19
 				STR R7, [R2, #8]
 				
 				AND R7, R5, R12
 				LSR R7, #1
-				STR R7, [R2, #&C]
+				STR R7, [R2]
 
 				B LOOP_END
 
