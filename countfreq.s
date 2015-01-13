@@ -140,6 +140,10 @@ START		    ; initialise counting loop
 				; R3 is bitmask
 				MOV R3, #&2040000
 				ORR R3, #&81
+				MOV R11, #&2000000
+				ORR R11, #&80
+				MOV R12, #&40000
+				ORR R12, #&1
 				; R4, R5, R6, R7 are count variables
 				MOV R4, #0
 				MOV R5, #0
