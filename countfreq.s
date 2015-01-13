@@ -165,25 +165,36 @@ LOOP			CMP R0, #1
 				EORS R9, R1, R10
 				BEQ LOOP
 				
-				TST R9, #1
-				ADDNE R4, #1
-				TST R9, #&80
-				ADDNE R5, #1
-				TST R9, #&40000
-				ADDNE R6, #1
-				TST R9, #&2000000
-				ADDNE R7, #1
+				; First pair, requiring a bit shift
+				AND R7, R9, R11
+				ADD R4, R4, R7, LSR #7
+				AND R7, R9, R12
+				AND R5, R5, R7
 				MOV R10, R1
 				B LOOP
+				; 0000 0000 0100 0000 0000 0000 0000 0001
 				
-STORE_VARS		LSR R4, #1
-				STR R4, [R2]
-				LSR R5, #1
-				STR R5, [R2, #4]
-				LSR R6, #1
-				STR R6, [R2, #8]
+STORE_VARS		MOV R11, #&FF000000
+				ORR R11, #&00C00000
+				MOV R12, #&00000300
+				ORR R12, #&000000FF
+				
+				AND R7, R4, R11
+				LSR R7, #1
+				STR R7, [R2]
+				
+				AND R7, R4, R12
+				LSR R7, #1
+				STR R7, [R2, #4]
+				
+				AND R7, R5, R11
+				LSR R7, #1
+				STR R7, [R2, #8]
+				
+				AND R7, R5, R12
 				LSR R7, #1
 				STR R7, [R2, #&C]
+
 				B LOOP_END
 
 ISR_FUNC		MOV R0, #0				; Interrupt must set variable to terminate main loop
