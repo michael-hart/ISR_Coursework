@@ -157,23 +157,18 @@ START		    ; initialise counting loop
 				AND R10, R3
 
 				; main counting loop loops forever, interrupted at end of simulation
-LOOP			CMP R0, #1
-				; LT means that the loop is done; store counts and branch to end
-				BLT STORE_VARS
-				LDR R1, [R8]
+LOOP			LDR R1, [R8]
 				AND R1, R3
 				EORS R9, R1, R10
-				BEQ LOOP
 				
 				; First pair, requiring a bit shift
-				AND R7, R9, R11
-				ADD R4, R4, R7, LSR #7
-				AND R7, R9, R12
-				ADD R5, R5, R7
+				ANDNE R7, R9, R11
+				ADDNE R4, R7, LSR #7
+				ANDNE R7, R9, R12
+				ADDNE R5, R7
 				MOV R10, R1
-				B LOOP
-				; 0000 0000 0000 0100 0000 0000 0000 0001
-				; 0000 0000 0000 0100 0000 0000 0000 0001
+				CMP R0, #1
+				BGE LOOP
 				
 STORE_VARS		MOV R11, #&FF000000
 				ORR R11, #&00FC0000
