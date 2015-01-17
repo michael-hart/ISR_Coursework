@@ -156,17 +156,26 @@ START		    ; initialise counting loop
 				LDR R10, [R8]
 				AND R10, R3
 
-				; main counting loop loops forever, interrupted at end of simulation
 LOOP			LDR R1, [R8]
 				AND R1, R3
 				EORS R9, R1, R10
 				
-				; First pair, requiring a bit shift
 				ANDNE R7, R9, R11
 				ADDNE R4, R7, LSR #7
 				ANDNE R7, R9, R12
 				ADDNE R5, R7
 				MOV R10, R1
+				
+				LDR R1, [R8]
+				AND R1, R3
+				EORS R9, R1, R10
+				
+				ANDNE R7, R9, R11
+				ADDNE R4, R7, LSR #7
+				ANDNE R7, R9, R12
+				ADDNE R5, R7
+				MOV R10, R1
+				
 				CMP R0, #1
 				BGE LOOP
 				
@@ -200,11 +209,11 @@ ISR_FUNC		MOV R0, #0				; Interrupt must set variable to terminate main loop
 ; PARAMETERS TO CONTROL SIMULATION, VALUES MAY BE CHANGED TO IMPLEMENT DIFFERENT TESTS
 ;--------------------------------------------------------------------------------------------
 SIMCONTROL
-SIM_TIME 		DCD  	1000	  ; length of simulation in cycles (100MHz clock)
-P0_PERIOD		DCD   	80        ; bit 0 input period in cycles
-P1_PERIOD		DCD   	34		  ; bit 7 input period in cycles
-P2_PERIOD		DCD  	44		  ; bit 18 input period	in cycles
-P3_PERIOD		DCD		38		  ; bit 25 input period	in cycles
+SIM_TIME 		DCD  	2000	  ; length of simulation in cycles (100MHz clock)
+P0_PERIOD		DCD   	28        ; bit 0 input period in cycles
+P1_PERIOD		DCD   	27		  ; bit 7 input period in cycles
+P2_PERIOD		DCD  	26		  ; bit 18 input period	in cycles
+P3_PERIOD		DCD		25		  ; bit 25 input period	in cycles
 ;---------------------DO NOT CHANGE AFTER THIS COMMENT---------------------------------------
 ;--------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------
